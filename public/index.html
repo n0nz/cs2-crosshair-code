@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101719">
+  <title>CS2 Crosshair Code Decoder</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark">⌖</span><span>CS2 / CROSSHAIR LAB</span></div>
+      <span class="build-label">SEPT 2026 · V3 / V4</span>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">SHARE CODE → CONSOLE COMMANDS</p>
+      <h1>ถอดรหัส <em>crosshair</em><br>ให้พร้อมลงสนาม</h1>
+      <p class="intro-copy">วางรหัสจาก CS2 ดูภาพตัวอย่าง แล้วคัดลอกคำสั่งหนึ่งบรรทัดไปใส่ console ได้ทันที รองรับรหัสหลังอัปเดตกันยายน 2026</p>
+    </section>
+
+    <section class="workspace" aria-label="เครื่องมือแปลง crosshair">
+      <div class="input-panel panel">
+        <div class="panel-heading"><span class="step">01</span><h2>ใส่ share code</h2></div>
+        <label for="share-code">CROSSHAIR CODE</label>
+        <div class="input-wrap"><input id="share-code" type="text" autocomplete="off" spellcheck="false" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" aria-describedby="code-message"><button id="example" type="button">ใช้ตัวอย่าง</button></div>
+        <p id="code-message" class="input-message" role="status">วางรหัสที่คัดลอกจาก Settings → Crosshair/Scopes → Share</p>
+        <div class="note"><span>↗</span><p>รหัสรุ่นเก่า (v1) ใช้กับ CS2 ปัจจุบันไม่ได้โดยตรง เว็บนี้จะแจ้งเมื่อเจอรหัสเก่า</p></div>
+      </div>
+
+      <div class="preview-panel panel">
+        <div class="panel-heading"><span class="step">02</span><h2>Preview</h2><span id="version-badge" class="badge">รอรหัส</span></div>
+        <div class="preview-field"><div class="map-lines"></div><canvas id="preview" width="520" height="320" aria-label="ภาพตัวอย่าง crosshair"></canvas><span class="preview-caption">SIMULATED VIEW · STATIC STATE</span></div>
+        <p class="preview-note">ภาพจำลองสถานะนิ่ง ขนาดจริงอาจต่างตามความสูงจอและการแสดงผลในเกม</p>
+      </div>
+
+      <div class="output-panel panel">
+        <div class="panel-heading"><span class="step">03</span><h2>คำสั่ง console</h2><button id="copy" class="copy-button" type="button" disabled>คัดลอกคำสั่ง</button></div>
+        <p class="output-help">คัดลอกทั้งบรรทัดไปวางใน Developer Console ของ CS2</p>
+        <textarea id="commands" readonly spellcheck="false" placeholder="คำสั่งจะปรากฏที่นี่เมื่อใส่รหัสที่ถูกต้อง" aria-label="คำสั่ง console"></textarea>
+        <div class="output-footer"><span id="command-count">0 COMMANDS</span><span>คั่นด้วย ; พร้อมวาง</span></div>
+      </div>
+
+      <div class="details-panel panel">
+        <div class="panel-heading"><span class="step">04</span><h2>ค่าจากรหัส</h2></div>
+        <div id="details" class="details-grid"><p class="empty-details">รายละเอียดจะปรากฏหลังใส่รหัส</p></div>
+      </div>
+    </section>
+
+    <footer><span>ข้อมูลถูกประมวลผลบนเครื่องของคุณ</span><a href="https://www.counter-strike.net/news/CS2" target="_blank" rel="noopener noreferrer">อ่าน patch notes ↗</a></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Kanit:wght@300;400;500;600&display=swap');
+
+:root { font-family: Kanit, sans-serif; color: #e9f1ec; background: #101719; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 75% 5%, #203633 0, transparent 33%), #101719; }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+.shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+.masthead { height: 76px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #344443; }
+.brand, .build-label, .eyebrow, .step, label, .badge, .preview-caption, .output-footer, .detail span, footer { font-family: 'IBM Plex Mono', monospace; }
+.brand { display: flex; gap: 11px; align-items: center; font-size: 13px; font-weight: 600; letter-spacing: .09em; }
+.brand-mark { font-size: 28px; color: #d5ff72; line-height: 1; }
+.build-label { font-size: 11px; color: #8fa29a; letter-spacing: .05em; }
+.intro { padding: 68px 0 60px; max-width: 760px; }
+.eyebrow { color: #cfff6d; font-size: 12px; letter-spacing: .15em; margin: 0 0 17px; }
+h1 { font-size: clamp(48px, 7vw, 86px); line-height: 1.06; font-weight: 500; letter-spacing: -.045em; margin: 0; }
+h1 em { font-style: normal; color: #d5ff72; }
+.intro-copy { margin: 25px 0 0; max-width: 600px; color: #a9bbb2; font-weight: 300; font-size: 17px; line-height: 1.7; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-bottom: 64px; }
+.panel { background: #192326; border: 1px solid #354444; border-radius: 12px; overflow: hidden; }
+.input-panel, .output-panel, .details-panel { padding: 24px; }
+.panel-heading { display: flex; gap: 12px; align-items: center; margin-bottom: 25px; }
+.panel-heading h2 { font-size: 20px; font-weight: 500; margin: 0; line-height: 1.2; }
+.step { color: #d5ff72; font-size: 12px; border: 1px solid #65835e; padding: 6px 8px; border-radius: 4px; }
+label { display: block; font-size: 11px; color: #a1b1a8; letter-spacing: .11em; margin-bottom: 11px; }
+.input-wrap { display: flex; border: 1px solid #536760; border-radius: 7px; overflow: hidden; background: #10191b; }
+.input-wrap:focus-within { border-color: #d5ff72; box-shadow: 0 0 0 2px #d5ff7220; }
+input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; padding: 16px 14px; color: #f2f8f1; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+input::placeholder { color: #71847c; }
+.input-wrap button { flex: none; border: 0; border-left: 1px solid #536760; padding: 0 14px; background: #26342f; color: #d5ff72; font-size: 13px; }
+.input-wrap button:hover { background: #33493b; }
+.input-message { min-height: 34px; color: #8fa69a; font-size: 13px; margin: 10px 0 16px; }
+.input-message.error { color: #ff9d8f; }
+.input-message.success { color: #cfff6d; }
+.note { display: flex; gap: 12px; border-top: 1px solid #354444; padding-top: 19px; color: #83998b; }
+.note span { color: #cfff6d; }
+.note p { margin: 0; font-size: 13px; line-height: 1.5; }
+.preview-panel .panel-heading { margin: 24px 24px 20px; }
+.badge { margin-left: auto; border: 1px solid #486348; border-radius: 4px; padding: 6px 8px; color: #bfe687; font-size: 10px; letter-spacing: .08em; }
+.preview-field { position: relative; background: linear-gradient(130deg, #596e6b 0%, #536961 37%, #384f53 38%, #2f454c 100%); height: 230px; overflow: hidden; }
+.preview-field:before { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 69%, #1d363d80 70%), repeating-linear-gradient(90deg, transparent 0 95px, #d3ebca12 96px 97px); }
+.map-lines { position: absolute; width: 48%; height: 100%; right: 0; top: 0; background: linear-gradient(145deg, #82928760, #2e4545 65%); clip-path: polygon(27% 0,100% 0,100% 100%,0 100%); }
+canvas { position: relative; display: block; width: 100%; height: 100%; }
+.preview-caption { position: absolute; bottom: 10px; left: 14px; font-size: 10px; letter-spacing: .1em; color: #e6f0dfb2; }
+.preview-note { padding: 0 24px; margin: 15px 0 19px; font-size: 12px; color: #91a69b; }
+.copy-button { margin-left: auto; border: 0; border-radius: 5px; background: #d5ff72; color: #14201a; padding: 10px 14px; font-weight: 500; font-size: 13px; }
+.copy-button:hover:not(:disabled) { background: #e6ffab; }
+.copy-button:disabled { opacity: .42; cursor: not-allowed; }
+.output-help { margin: -10px 0 13px; color: #91a69b; font-size: 13px; }
+textarea { display: block; width: 100%; height: 189px; padding: 17px; resize: vertical; border: 1px solid #344643; border-radius: 6px; outline: none; background: #10191b; color: #d6f9a2; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+textarea::placeholder { color: #70877b; }
+.output-footer { display: flex; justify-content: space-between; gap: 10px; color: #91a69b; font-size: 10px; letter-spacing: .06em; margin-top: 11px; }
+.details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #344643; border: 1px solid #344643; }
+.detail { display: flex; flex-direction: column; gap: 5px; padding: 13px 11px; background: #192326; min-height: 65px; }
+.detail span { font-size: 10px; letter-spacing: .05em; color: #8da299; }
+.detail strong { font-size: 15px; font-weight: 400; line-height: 1.2; overflow-wrap: anywhere; }
+.empty-details { background: #192326; grid-column: 1 / -1; margin: 0; padding: 20px; color: #91a69b; font-size: 13px; }
+footer { display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid #344443; padding: 22px 0 36px; color: #7e9287; font-size: 11px; }
+footer a { color: #bad58b; text-decoration: none; }
+@media (max-width: 760px) { .shell { width: min(100% - 28px, 550px); } .masthead { height: 64px; } .build-label { display: none; } .intro { padding: 46px 0 42px; } .workspace { grid-template-columns: 1fr; } .input-panel, .output-panel, .details-panel { padding: 19px; } .details-grid { grid-template-columns: repeat(2, 1fr); } .input-wrap { flex-wrap: wrap; } input { flex-basis: 100%; } .input-wrap button { width: 100%; border-left: 0; border-top: 1px solid #536760; padding: 9px; } }
