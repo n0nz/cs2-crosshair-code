@@ -1,5 +1,6 @@
 import { decodeCrosshair, consoleCommands } from './crosshair.js';
-import { previewBars, previewModes } from './preview-geometry.js';
+import { previewBars, previewModes, previewZoom } from './preview-geometry.js';
+import { paintBarOutlines, paintBarFills, paintPreviewBars } from './preview-paint.js';
 import { t } from './i18n.js';
 import { exampleCodes } from './examples.js';
 
@@ -48,54 +49,34 @@ function renderPreview(c) {
   const surface = clearPreview();
   if (!surface || !c) return;
   const { ctx, centerX, centerY } = surface;
-  const zoom = Math.min(5, Math.max(1, 3 * 1080 / Math.max(1, c.screenHeight)));
+  const zoom = previewZoom(c.screenHeight);
   const stretch = previewModes[aspect.value] ?? 1;
   const color = `rgba(${c.red}, ${c.green}, ${c.blue}, ${c.alpha / 255})`;
 
   if (c.style === 3 || c.style === 8) {
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.scale(zoom * stretch, zoom);
-    const radius = Math.max(2, c.gap + c.length);
-    ctx.beginPath();
-    if (c.style === 3) ctx.arc(0, 0, radius, 0, Math.PI * 2);
-    else ctx.rect(-radius, -radius, radius * 2, radius * 2);
-    if (c.outlineMode) {
-      ctx.strokeStyle = '#061014';
-      ctx.lineWidth = Math.max(1, c.thickness) + 2;
-      ctx.stroke();
-    }
-    ctx.strokeStyle = color;
-    ctx.lineWidth = Math.max(1, c.thickness);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  if (c.style === 3 || c.style === 8) {
-    if (!c.dot) return;
-    const dot = previewBars({ ...c, style: 6 }, aspect.value).dot;
-    drawBar(ctx, dot, centerX, centerY, zoom, c.outlineMode, color);
+    const dots = c.dot ? [previewBars({ ...c, style: 6 }, aspect.value).dot] : [];
+    paintShape(ctx, c, centerX, centerY, zoom, stretch, true, color);
+    paintBarOutlines(ctx, dots, centerX, centerY, zoom, c.outlineMode);
+    paintShape(ctx, c, centerX, centerY, zoom, stretch, false, color);
+    paintBarFills(ctx, dots, centerX, centerY, zoom, color);
     return;
   }
-  for (const bar of Object.values(previewBars(c, aspect.value))) {
-    drawBar(ctx, bar, centerX, centerY, zoom, c.outlineMode, color);
-  }
+  paintPreviewBars(ctx, Object.values(previewBars(c, aspect.value)), centerX, centerY, zoom, c.outlineMode, color);
 }
 
-function drawBar(ctx, bar, centerX, centerY, zoom, outlineMode, color) {
-  const x = Math.round(centerX + bar.x * zoom);
-  const y = Math.round(centerY + bar.y * zoom);
-  const width = Math.max(1, Math.round(bar.width * zoom));
-  const height = Math.max(1, Math.round(bar.height * zoom));
-  if (outlineMode === 1) {
-    ctx.fillStyle = '#061014';
-    ctx.fillRect(x - 1, y - 1, width + 2, height + 2);
-  } else if (outlineMode === 2) {
-    ctx.fillStyle = '#061014';
-    ctx.fillRect(x - 1, y - 1, width + 1, height + 1);
-  }
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, width, height);
+function paintShape(ctx, c, centerX, centerY, zoom, stretch, outline, color) {
+  if (outline && !c.outlineMode) return;
+  ctx.save();
+  ctx.translate(centerX, centerY);
+  ctx.scale(zoom * stretch, zoom);
+  const radius = Math.max(2, c.gap + c.length);
+  ctx.beginPath();
+  if (c.style === 3) ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  else ctx.rect(-radius, -radius, radius * 2, radius * 2);
+  ctx.strokeStyle = outline ? '#061014' : color;
+  ctx.lineWidth = Math.max(1, c.thickness) + (outline ? 2 : 0);
+  ctx.stroke();
+  ctx.restore();
 }
 
 function renderDetails(c) {
