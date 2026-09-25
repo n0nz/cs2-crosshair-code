@@ -1,5 +1,9 @@
 const OUTLINE_COLOR = '#061014';
 
+function fillDisplayRect(ctx, x, y, width, height, centerX, stretch) {
+  ctx.fillRect(centerX + (x - centerX) * stretch, y, width * stretch, height);
+}
+
 function pixelRects(bars, centerX, centerY, zoom) {
   // Round offsets symmetrically: Math.round(-4.5) and Math.round(4.5)
   // otherwise produce arms with different lengths in stretched modes.
@@ -16,25 +20,25 @@ function pixelRects(bars, centerX, centerY, zoom) {
   });
 }
 
-export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode) {
+export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch = 1) {
   if (!outlineMode) return;
   ctx.fillStyle = OUTLINE_COLOR;
   for (const { x, y, width, height } of pixelRects(bars, centerX, centerY, zoom)) {
     const extra = outlineMode === 1 ? 2 : 1;
-    ctx.fillRect(x - 1, y - 1, width + extra, height + extra);
+    fillDisplayRect(ctx, x - 1, y - 1, width + extra, height + extra, Math.round(centerX), stretch);
   }
 }
 
-export function paintBarFills(ctx, bars, centerX, centerY, zoom, color) {
+export function paintBarFills(ctx, bars, centerX, centerY, zoom, color, stretch = 1) {
   ctx.fillStyle = color;
   for (const { x, y, width, height } of pixelRects(bars, centerX, centerY, zoom)) {
-    ctx.fillRect(x, y, width, height);
+    fillDisplayRect(ctx, x, y, width, height, Math.round(centerX), stretch);
   }
 }
 
 // Complete the outline layer before any colored pixels. Touching pieces then
 // cover each other's inner outline while separated pieces retain their border.
-export function paintPreviewBars(ctx, bars, centerX, centerY, zoom, outlineMode, color) {
-  paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode);
-  paintBarFills(ctx, bars, centerX, centerY, zoom, color);
+export function paintPreviewBars(ctx, bars, centerX, centerY, zoom, outlineMode, color, stretch = 1) {
+  paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch);
+  paintBarFills(ctx, bars, centerX, centerY, zoom, color, stretch);
 }

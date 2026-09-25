@@ -8,15 +8,15 @@ export function previewZoom(screenHeight) {
   return Math.min(2, Math.max(0.75, 1.5 * 1080 / Math.max(1, screenHeight)));
 }
 
-// Rectangles are relative to the center; only x coordinates and widths stretch.
-export function previewBars(c, mode = '16:9') {
-  const stretch = previewModes[mode] ?? 1;
+// Native-resolution rectangles relative to the center. Display stretching
+// happens only after these have been rasterized to pixels.
+export function previewBars(c) {
   const length = Math.max(0, c.length);
   const thickness = Math.max(1, c.thickness);
   // CS2's current gap is the distance from the center to each bar's inner edge.
   // Adding half the bar thickness here makes thick crosshairs (e.g. d0cc) too open.
   const start = c.gap;
-  const rect = (x, y, width, height) => ({ x: x * stretch, y, width: width * stretch, height });
+  const rect = (x, y, width, height) => ({ x, y, width, height });
   const bars = {};
 
   if (c.style === 6) {

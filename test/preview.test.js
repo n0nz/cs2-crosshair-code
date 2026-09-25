@@ -29,36 +29,53 @@ test('donk gap-zero crosshair paints equally on both sides of the center', async
   assert.equal(c.gap, 0);
   const center = 40;
 
-  for (const mode of ['16:9', '4:3', '16:10']) {
-    const pixels = new Set();
-    const ctx = {
-      fillStyle: '',
-      fillRect(x, y, width, height) {
-        for (let row = y; row < y + height; row++) {
-          for (let col = x; col < x + width; col++) pixels.add(`${col},${row}`);
-        }
-      },
-    };
-    paintPreviewBars(ctx, Object.values(previewBars(c, mode)), center, center, previewZoom(c.screenHeight), c.outlineMode, 'green');
-    for (const pixel of pixels) {
-      const [x, y] = pixel.split(',').map(Number);
-      assert.ok(pixels.has(`${2 * center - 1 - x},${y}`), `${mode}: left/right mismatch at ${pixel}`);
-      assert.ok(pixels.has(`${x},${2 * center - 1 - y}`), `${mode}: top/bottom mismatch at ${pixel}`);
-    }
+  const pixels = new Set();
+  const ctx = {
+    fillStyle: '',
+    fillRect(x, y, width, height) {
+      for (let row = y; row < y + height; row++) {
+        for (let col = x; col < x + width; col++) pixels.add(`${col},${row}`);
+      }
+    },
+  };
+  paintPreviewBars(ctx, Object.values(previewBars(c)), center, center, previewZoom(c.screenHeight), c.outlineMode, 'green');
+  for (const pixel of pixels) {
+    const [x, y] = pixel.split(',').map(Number);
+    assert.ok(pixels.has(`${2 * center - 1 - x},${y}`), `left/right mismatch at ${pixel}`);
+    assert.ok(pixels.has(`${x},${2 * center - 1 - y}`), `top/bottom mismatch at ${pixel}`);
   }
 });
 
-test('stretched ratios change horizontal dimensions only', async () => {
-  const { previewBars } = await import('../public/preview-geometry.js');
-  const c = { length: 9, thickness: 3, gap: 3, dot: false, tStyle: false, style: 4 };
-  const native = previewBars(c, '16:9');
-  const fourThree = previewBars(c, '4:3');
-  const sixteenTen = previewBars(c, '16:10');
-  assert.equal(fourThree.right.width, 12);
-  assert.equal(fourThree.bottom.height, 9);
-  assert.equal(sixteenTen.right.width, 10);
-  assert.equal(sixteenTen.bottom.height, 9);
-  assert.equal(native.right.width, 9);
+test('stretched previews scale rasterized player crosshairs by the display ratio', async () => {
+  const { decodeCrosshair } = await import('../public/crosshair.js');
+  const { exampleCodes } = await import('../public/examples.js');
+  const { previewBars, previewModes, previewZoom } = await import('../public/preview-geometry.js');
+  const { paintPreviewBars } = await import('../public/preview-paint.js');
+
+  for (const name of ['donk', 'd0cc', 'f0rest']) {
+    const c = decodeCrosshair(exampleCodes[name]);
+    const bars = Object.values(previewBars(c));
+    const dimensions = (mode) => {
+      const extents = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
+      const ctx = {
+        fillStyle: '',
+        fillRect(x, y, width, height) {
+          extents.left = Math.min(extents.left, x);
+          extents.right = Math.max(extents.right, x + width);
+          extents.top = Math.min(extents.top, y);
+          extents.bottom = Math.max(extents.bottom, y + height);
+        },
+      };
+      paintPreviewBars(ctx, bars, 40, 40, previewZoom(c.screenHeight), c.outlineMode, 'green', previewModes[mode]);
+      return { width: extents.right - extents.left, height: extents.bottom - extents.top };
+    };
+    const native = dimensions('16:9');
+    for (const [mode, expectedRatio] of [['4:3', 4 / 3], ['16:10', 10 / 9]]) {
+      const stretched = dimensions(mode);
+      assert.ok(Math.abs(stretched.width / native.width - expectedRatio) < 1e-9, `${name} ${mode}: wrong horizontal stretch`);
+      assert.equal(stretched.height, native.height, `${name} ${mode}: vertical size changed`);
+    }
+  }
 });
 
 test('touching outlined bars and dot have no black seam inside the crosshair', async () => {

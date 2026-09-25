@@ -54,14 +54,14 @@ function renderPreview(c) {
   const color = `rgba(${c.red}, ${c.green}, ${c.blue}, ${c.alpha / 255})`;
 
   if (c.style === 3 || c.style === 8) {
-    const dots = c.dot ? [previewBars({ ...c, style: 6 }, aspect.value).dot] : [];
+    const dots = c.dot ? [previewBars({ ...c, style: 6 }).dot] : [];
     paintShape(ctx, c, centerX, centerY, zoom, stretch, true, color);
-    paintBarOutlines(ctx, dots, centerX, centerY, zoom, c.outlineMode);
+    paintBarOutlines(ctx, dots, centerX, centerY, zoom, c.outlineMode, stretch);
     paintShape(ctx, c, centerX, centerY, zoom, stretch, false, color);
-    paintBarFills(ctx, dots, centerX, centerY, zoom, color);
+    paintBarFills(ctx, dots, centerX, centerY, zoom, color, stretch);
     return;
   }
-  paintPreviewBars(ctx, Object.values(previewBars(c, aspect.value)), centerX, centerY, zoom, c.outlineMode, color);
+  paintPreviewBars(ctx, Object.values(previewBars(c)), centerX, centerY, zoom, c.outlineMode, color, stretch);
 }
 
 function paintShape(ctx, c, centerX, centerY, zoom, stretch, outline, color) {
