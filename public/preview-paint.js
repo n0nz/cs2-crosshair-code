@@ -1,12 +1,19 @@
 const OUTLINE_COLOR = '#061014';
 
 function pixelRects(bars, centerX, centerY, zoom) {
-  return bars.map((bar) => ({
-    x: Math.round(centerX + bar.x * zoom),
-    y: Math.round(centerY + bar.y * zoom),
-    width: Math.max(1, Math.round(bar.width * zoom)),
-    height: Math.max(1, Math.round(bar.height * zoom)),
-  }));
+  // Round offsets symmetrically: Math.round(-4.5) and Math.round(4.5)
+  // otherwise produce arms with different lengths in stretched modes.
+  const edge = (center, offset) => Math.round(center) + Math.sign(offset) * Math.round(Math.abs(offset * zoom));
+  return bars.map((bar) => {
+    const x = edge(centerX, bar.x);
+    const y = edge(centerY, bar.y);
+    return {
+      x,
+      y,
+      width: Math.max(1, edge(centerX, bar.x + bar.width) - x),
+      height: Math.max(1, edge(centerY, bar.y + bar.height) - y),
+    };
+  });
 }
 
 export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode) {

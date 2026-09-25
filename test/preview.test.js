@@ -20,6 +20,34 @@ test('d0cc gap starts one pixel from the center even with three-pixel thickness'
   assert.deepEqual(bars.left, { x: -3, y: -1.5, width: 2, height: 3 });
 });
 
+test('donk gap-zero crosshair paints equally on both sides of the center', async () => {
+  const { decodeCrosshair } = await import('../public/crosshair.js');
+  const { exampleCodes } = await import('../public/examples.js');
+  const { previewBars, previewZoom } = await import('../public/preview-geometry.js');
+  const { paintPreviewBars } = await import('../public/preview-paint.js');
+  const c = decodeCrosshair(exampleCodes.donk);
+  assert.equal(c.gap, 0);
+  const center = 40;
+
+  for (const mode of ['16:9', '4:3', '16:10']) {
+    const pixels = new Set();
+    const ctx = {
+      fillStyle: '',
+      fillRect(x, y, width, height) {
+        for (let row = y; row < y + height; row++) {
+          for (let col = x; col < x + width; col++) pixels.add(`${col},${row}`);
+        }
+      },
+    };
+    paintPreviewBars(ctx, Object.values(previewBars(c, mode)), center, center, previewZoom(c.screenHeight), c.outlineMode, 'green');
+    for (const pixel of pixels) {
+      const [x, y] = pixel.split(',').map(Number);
+      assert.ok(pixels.has(`${2 * center - 1 - x},${y}`), `${mode}: left/right mismatch at ${pixel}`);
+      assert.ok(pixels.has(`${x},${2 * center - 1 - y}`), `${mode}: top/bottom mismatch at ${pixel}`);
+    }
+  }
+});
+
 test('stretched ratios change horizontal dimensions only', async () => {
   const { previewBars } = await import('../public/preview-geometry.js');
   const c = { length: 9, thickness: 3, gap: 3, dot: false, tStyle: false, style: 4 };
