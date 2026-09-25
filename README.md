@@ -2,6 +2,8 @@
 
 เว็บหน้าเดียวสำหรับถอดรหัส CS2 crosshair share code รุ่น 3/4 เป็นภาพตัวอย่างและคำสั่ง console ที่คั่นด้วย `;` ประมวลผลใน browser ไม่มี server หรือฐานข้อมูล
 
+หน้าเว็บสลับภาษาไทย/อังกฤษได้ และ preview เลือก 16:9 native, 4:3 stretched หรือ 16:10 stretched ได้ โหมด stretched จำลองการยืดแนวนอนจากภาพเกมไปเต็มจอ 16:9 ภาพ preview ขยายเพื่อให้เห็นรายละเอียดชัดขึ้น ไม่ใช่ขนาดจริงแบบพิกเซลต่อพิกเซล
+
 ## ใช้งาน
 
 เปิด `public/index.html` ผ่าน static server หรือ deploy ไป Cloudflare Workers Static Assets:

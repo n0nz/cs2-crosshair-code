@@ -1,19 +1,23 @@
 const ALPHABET = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789';
 const CODE_PATTERN = /^CSGO-(.{5})-(.{5})-(.{5})-(.{5})-(.{5})$/;
 
+function decodeError(code, message, params = {}) {
+  return Object.assign(new Error(message), { code, params });
+}
+
 export function decodeCrosshair(input) {
   const code = input.trim();
   const match = CODE_PATTERN.exec(code);
-  if (!match) throw new Error('รูปแบบรหัสไม่ถูกต้อง: ต้องเป็น CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx');
+  if (!match) throw decodeError('errorFormat', 'รูปแบบรหัสไม่ถูกต้อง: ต้องเป็น CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx');
 
   const digits = match.slice(1).join('');
   let value = 0n;
   for (const character of [...digits].reverse()) {
     const digit = ALPHABET.indexOf(character);
-    if (digit < 0) throw new Error('รหัสมีอักขระที่ใช้ไม่ได้ กรุณาคัดลอกจากเกมอีกครั้ง');
+    if (digit < 0) throw decodeError('errorCharacter', 'รหัสมีอักขระที่ใช้ไม่ได้ กรุณาคัดลอกจากเกมอีกครั้ง');
     value = value * 57n + BigInt(digit);
   }
-  if (value >= (1n << 144n)) throw new Error('รหัสอยู่นอกช่วงข้อมูล crosshair');
+  if (value >= (1n << 144n)) throw decodeError('errorRange', 'รหัสอยู่นอกช่วงข้อมูล crosshair');
 
   const bytes = new Uint8Array(18);
   for (let i = 17; i >= 0; i--) {
@@ -21,14 +25,14 @@ export function decodeCrosshair(input) {
     value >>= 8n;
   }
   const checksum = bytes.slice(1).reduce((sum, byte) => sum + byte, 0) & 255;
-  if (bytes[0] !== checksum) throw new Error('Checksum ไม่ตรง: รหัสอาจพิมพ์ผิดหรือไม่ใช่ crosshair code');
-  if (bytes[1] === 1) throw new Error('รหัสนี้เป็นรูปแบบเก่า (v1) เกมรุ่นใหม่ไม่รับโดยตรง ต้องแปลงเป็นรหัสรุ่น 4 ก่อน');
-  if (bytes[1] !== 3 && bytes[1] !== 4) throw new Error(`ยังไม่รองรับรหัสรุ่น ${bytes[1]}`);
+  if (bytes[0] !== checksum) throw decodeError('errorChecksum', 'Checksum ไม่ตรง: รหัสอาจพิมพ์ผิดหรือไม่ใช่ crosshair code');
+  if (bytes[1] === 1) throw decodeError('errorOld', 'รหัสนี้เป็นรูปแบบเก่า (v1) เกมรุ่นใหม่ไม่รับโดยตรง ต้องแปลงเป็นรหัสรุ่น 4 ก่อน');
+  if (bytes[1] !== 3 && bytes[1] !== 4) throw decodeError('errorVersion', `ยังไม่รองรับรหัสรุ่น ${bytes[1]}`, { version: bytes[1] });
 
   const packed = (bytes[10] | (bytes[11] << 8) | (bytes[12] << 16) | (bytes[13] << 24)) >>> 0;
   const version = bytes[1];
   const outlineMode = version === 4 ? (packed >>> 28) & 3 : Number(Boolean(bytes[2] & 0x20));
-  if (outlineMode > 2) throw new Error('รหัสมีค่า outline ที่ไม่รองรับ');
+  if (outlineMode > 2) throw decodeError('errorOutline', 'รหัสมีค่า outline ที่ไม่รองรับ');
   const result = {
     code,
     version,
@@ -46,7 +50,7 @@ export function decodeCrosshair(input) {
     thickness: (packed >>> 23) & 31,
     screenHeight: bytes[14] | (bytes[15] << 8),
   };
-  if (result.style > (version === 4 ? 8 : 7)) throw new Error('รหัสมีค่า style ที่ไม่รองรับ');
+  if (result.style > (version === 4 ? 8 : 7)) throw decodeError('errorStyle', 'รหัสมีค่า style ที่ไม่รองรับ');
   return result;
 }
 

@@ -12,44 +12,45 @@
   <main class="shell">
     <header class="masthead">
       <div class="brand"><span class="brand-mark">⌖</span><span>CS2 / CROSSHAIR LAB</span></div>
-      <span class="build-label">SEPT 2026 · V3 / V4</span>
+      <div class="header-actions"><span class="build-label" data-i18n="buildLabel">ก.ย. 2026 · V3 / V4</span><div class="language-switch" role="group" aria-label="Language / ภาษา"><button id="lang-th" type="button" aria-pressed="true">TH</button><button id="lang-en" type="button" aria-pressed="false">EN</button></div></div>
     </header>
 
     <section class="intro">
-      <p class="eyebrow">SHARE CODE → CONSOLE COMMANDS</p>
-      <h1>ถอดรหัส <em>crosshair</em><br>ให้พร้อมลงสนาม</h1>
-      <p class="intro-copy">วางรหัสจาก CS2 ดูภาพตัวอย่าง แล้วคัดลอกคำสั่งหนึ่งบรรทัดไปใส่ console ได้ทันที รองรับรหัสหลังอัปเดตกันยายน 2026</p>
+      <p class="eyebrow" data-i18n="eyebrow">รหัสแชร์ → คำสั่ง CONSOLE</p>
+      <h1 data-i18n-html="introTitle">ถอดรหัส <em>crosshair</em><br>ให้พร้อมลงสนาม</h1>
+      <p class="intro-copy" data-i18n="introCopy">วางรหัสจาก CS2 ดูภาพตัวอย่าง แล้วคัดลอกคำสั่งหนึ่งบรรทัดไปใส่ console ได้ทันที รองรับรหัสหลังอัปเดตกันยายน 2026</p>
     </section>
 
-    <section class="workspace" aria-label="เครื่องมือแปลง crosshair">
+    <section class="workspace" aria-label="เครื่องมือแปลง crosshair" data-i18n-aria="workspaceLabel">
       <div class="input-panel panel">
-        <div class="panel-heading"><span class="step">01</span><h2>ใส่ share code</h2></div>
-        <label for="share-code">CROSSHAIR CODE</label>
-        <div class="input-wrap"><input id="share-code" type="text" autocomplete="off" spellcheck="false" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" aria-describedby="code-message"><button id="example" type="button">ใช้ตัวอย่าง</button></div>
+        <div class="panel-heading"><span class="step">01</span><h2 data-i18n="inputTitle">ใส่ share code</h2></div>
+        <label for="share-code" data-i18n="codeLabel">รหัส CROSSHAIR</label>
+        <div class="input-wrap"><input id="share-code" type="text" autocomplete="off" spellcheck="false" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" aria-describedby="code-message"><button id="example" type="button" data-i18n="example">ใช้ตัวอย่าง</button></div>
         <p id="code-message" class="input-message" role="status">วางรหัสที่คัดลอกจาก Settings → Crosshair/Scopes → Share</p>
-        <div class="note"><span>↗</span><p>รหัสรุ่นเก่า (v1) ใช้กับ CS2 ปัจจุบันไม่ได้โดยตรง เว็บนี้จะแจ้งเมื่อเจอรหัสเก่า</p></div>
+        <div class="note"><span>↗</span><p data-i18n="oldCodeNote">รหัสรุ่นเก่า (v1) ใช้กับ CS2 ปัจจุบันไม่ได้โดยตรง เว็บนี้จะแจ้งเมื่อเจอรหัสเก่า</p></div>
       </div>
 
       <div class="preview-panel panel">
-        <div class="panel-heading"><span class="step">02</span><h2>Preview</h2><span id="version-badge" class="badge">รอรหัส</span></div>
-        <div class="preview-field"><div class="map-lines"></div><canvas id="preview" width="520" height="320" aria-label="ภาพตัวอย่าง crosshair"></canvas><span class="preview-caption">SIMULATED VIEW · STATIC STATE</span></div>
-        <p class="preview-note">ภาพจำลองสถานะนิ่ง ขนาดจริงอาจต่างตามความสูงจอและการแสดงผลในเกม</p>
+        <div class="panel-heading"><span class="step">02</span><h2 data-i18n="previewTitle">ภาพตัวอย่าง</h2><span id="version-badge" class="badge">รอรหัส</span></div>
+        <div class="preview-field"><div class="map-lines"></div><canvas id="preview" aria-label="ภาพตัวอย่าง crosshair" data-i18n-aria="previewImage"></canvas><span class="preview-caption" data-i18n="previewCaption">ภาพจำลอง · สถานะนิ่ง</span></div>
+        <div class="preview-controls"><label for="aspect-ratio" data-i18n="aspectLabel">สัดส่วนภาพ</label><select id="aspect-ratio"><option value="16:9" data-i18n="aspectNative">16:9 Native</option><option value="4:3" data-i18n="aspectFourThree">4:3 Stretched</option><option value="16:10" data-i18n="aspectSixteenTen">16:10 Stretched</option></select></div>
+        <p class="preview-note" data-i18n="previewNote">ภาพจำลองสถานะนิ่งที่ขยายเพื่อดูชัด เลือกสัดส่วนที่ใช้เล่นเพื่อดูการยืดในแนวนอน</p>
       </div>
 
       <div class="output-panel panel">
-        <div class="panel-heading"><span class="step">03</span><h2>คำสั่ง console</h2><button id="copy" class="copy-button" type="button" disabled>คัดลอกคำสั่ง</button></div>
-        <p class="output-help">คัดลอกทั้งบรรทัดไปวางใน Developer Console ของ CS2</p>
-        <textarea id="commands" readonly spellcheck="false" placeholder="คำสั่งจะปรากฏที่นี่เมื่อใส่รหัสที่ถูกต้อง" aria-label="คำสั่ง console"></textarea>
-        <div class="output-footer"><span id="command-count">0 COMMANDS</span><span>คั่นด้วย ; พร้อมวาง</span></div>
+        <div class="panel-heading"><span class="step">03</span><h2 data-i18n="commandsTitle">คำสั่ง console</h2><button id="copy" class="copy-button" type="button" disabled data-i18n="copy">คัดลอกคำสั่ง</button></div>
+        <p class="output-help" data-i18n="outputHelp">คัดลอกทั้งบรรทัดไปวางใน Developer Console ของ CS2</p>
+        <textarea id="commands" readonly spellcheck="false" placeholder="คำสั่งจะปรากฏที่นี่เมื่อใส่รหัสที่ถูกต้อง" aria-label="คำสั่ง console" data-i18n-placeholder="outputPlaceholder" data-i18n-aria="commandsLabel"></textarea>
+        <div class="output-footer"><span id="command-count">0 COMMANDS</span><span data-i18n="separatorNote">คั่นด้วย ; พร้อมวาง</span></div>
       </div>
 
       <div class="details-panel panel">
-        <div class="panel-heading"><span class="step">04</span><h2>ค่าจากรหัส</h2></div>
+        <div class="panel-heading"><span class="step">04</span><h2 data-i18n="detailsTitle">ค่าจากรหัส</h2></div>
         <div id="details" class="details-grid"><p class="empty-details">รายละเอียดจะปรากฏหลังใส่รหัส</p></div>
       </div>
     </section>
 
-    <footer><span>ข้อมูลถูกประมวลผลบนเครื่องของคุณ</span><a href="https://www.counter-strike.net/news/CS2" target="_blank" rel="noopener noreferrer">อ่าน patch notes ↗</a></footer>
+    <footer><span data-i18n="localProcessing">ข้อมูลถูกประมวลผลบนเครื่องของคุณ</span><a href="https://www.counter-strike.net/news/CS2" target="_blank" rel="noopener noreferrer" data-i18n="patchNotes">อ่าน patch notes ↗</a></footer>
   </main>
 </body>
 </html>
