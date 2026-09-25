@@ -14,7 +14,7 @@ npx wrangler deploy
 
 ใน Cloudflare dashboard ให้ใช้ Workers & Pages → Create → Worker → เชื่อม repository นี้ และตั้ง deploy command เป็น `npx wrangler deploy` (ไม่ต้องมี build command) หรือใช้ CLI ด้านบนหลัง login
 
-ทดสอบตัวถอดรหัสด้วย `npm test` ตัวอย่างเริ่มต้นคือ `CSGO-uQPmY-jAqPO-O4O2C-Gj299-BzuKG`
+ทดสอบตัวถอดรหัสด้วย `npm test` เมนูตัวอย่างมีรหัสที่ผู้ใช้ระบุสำหรับ f0rest, donk, kyousuke, d0cc และ ohnePixel
 
 รหัส v1 ก่อนอัปเดต 22 กันยายน 2026 จะถูกแจ้งว่าเป็นรหัสเก่า ไม่ถูกแปลงเป็นคำสั่งใหม่โดยอัตโนมัติ เพราะหน่วยขนาดเดิมต่างจากหน่วยพิกเซล และต้องเลือกความสูงจอที่ใช้ในเกมเดิมก่อนแปลง ค่าที่แสดงมาจาก share code โดยตรง จึงอาจต่างจากค่าที่เกมแสดงใน console หากผู้เล่นเปลี่ยนค่าหลังสร้าง code
 

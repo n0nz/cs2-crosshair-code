@@ -32,8 +32,8 @@ label { display: block; font-size: 11px; color: #a1b1a8; letter-spacing: .11em; 
 .input-wrap:focus-within { border-color: #d5ff72; box-shadow: 0 0 0 2px #d5ff7220; }
 input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; padding: 16px 14px; color: #f2f8f1; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
 input::placeholder { color: #71847c; }
-.input-wrap button { flex: none; border: 0; border-left: 1px solid #536760; padding: 0 14px; background: #26342f; color: #d5ff72; font-size: 13px; }
-.input-wrap button:hover { background: #33493b; }
+.input-wrap select { flex: none; max-width: 154px; border: 0; border-left: 1px solid #536760; padding: 0 12px; background: #26342f; color: #d5ff72; font-size: 13px; }
+.input-wrap select:hover { background: #33493b; }
 .input-message { min-height: 34px; color: #8fa69a; font-size: 13px; margin: 10px 0 16px; }
 .input-message.error { color: #ff9d8f; }
 .input-message.success { color: #cfff6d; }
@@ -65,4 +65,4 @@ textarea::placeholder { color: #70877b; }
 .empty-details { background: #192326; grid-column: 1 / -1; margin: 0; padding: 20px; color: #91a69b; font-size: 13px; }
 footer { display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid #344443; padding: 22px 0 36px; color: #7e9287; font-size: 11px; }
 footer a { color: #bad58b; text-decoration: none; }
-@media (max-width: 760px) { .shell { width: min(100% - 28px, 550px); } .masthead { height: 64px; } .build-label { display: none; } .intro { padding: 46px 0 42px; } .workspace { grid-template-columns: 1fr; } .input-panel, .output-panel, .details-panel { padding: 19px; } .details-grid { grid-template-columns: repeat(2, 1fr); } .input-wrap { flex-wrap: wrap; } input { flex-basis: 100%; } .input-wrap button { width: 100%; border-left: 0; border-top: 1px solid #536760; padding: 9px; } }
+@media (max-width: 760px) { .shell { width: min(100% - 28px, 550px); } .masthead { height: 64px; } .build-label { display: none; } .intro { padding: 46px 0 42px; } .workspace { grid-template-columns: 1fr; } .input-panel, .output-panel, .details-panel { padding: 19px; } .details-grid { grid-template-columns: repeat(2, 1fr); } .input-wrap { flex-wrap: wrap; } input { flex-basis: 100%; } .input-wrap select { width: 100%; max-width: none; border-left: 0; border-top: 1px solid #536760; padding: 9px; } }

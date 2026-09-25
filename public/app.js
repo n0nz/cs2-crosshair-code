@@ -1,9 +1,10 @@
 import { decodeCrosshair, consoleCommands } from './crosshair.js';
 import { previewBars, previewModes } from './preview-geometry.js';
 import { t } from './i18n.js';
+import { exampleCodes } from './examples.js';
 
-const exampleCode = 'CSGO-uQPmY-jAqPO-O4O2C-Gj299-BzuKG';
 const input = document.querySelector('#share-code');
+const example = document.querySelector('#example');
 const message = document.querySelector('#code-message');
 const commands = document.querySelector('#commands');
 const copy = document.querySelector('#copy');
@@ -179,8 +180,12 @@ function setLanguage(next) {
   update();
 }
 
-input.addEventListener('input', update);
-document.querySelector('#example').addEventListener('click', () => { input.value = exampleCode; update(); input.focus(); });
+input.addEventListener('input', () => { example.value = ''; update(); });
+example.addEventListener('change', () => {
+  if (!example.value) return;
+  input.value = exampleCodes[example.value];
+  update();
+});
 document.querySelector('#lang-th').addEventListener('click', () => setLanguage('th'));
 document.querySelector('#lang-en').addEventListener('click', () => setLanguage('en'));
 aspect.addEventListener('change', () => {
