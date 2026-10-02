@@ -1,4 +1,5 @@
 const OUTLINE_COLOR = '#061014';
+const pixelCenter = (coordinate) => Math.floor(coordinate) + 0.5;
 
 function fillDisplayRect(ctx, x, y, width, height, centerX, stretch) {
   ctx.fillRect(centerX + (x - centerX) * stretch, y, width * stretch, height);
@@ -11,8 +12,8 @@ function pixelRects(bars, centerX, centerY, zoom) {
     const width = Math.max(1, Math.round(bar.width * zoom));
     const height = Math.max(1, Math.round(bar.height * zoom));
     return {
-      x: Math.round(Math.round(centerX) + (bar.x + bar.width / 2) * zoom - width / 2),
-      y: Math.round(Math.round(centerY) + (bar.y + bar.height / 2) * zoom - height / 2),
+      x: Math.round(pixelCenter(centerX) + (bar.x + bar.width / 2) * zoom - width / 2),
+      y: Math.round(pixelCenter(centerY) + (bar.y + bar.height / 2) * zoom - height / 2),
       width,
       height,
     };
@@ -24,14 +25,14 @@ export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode,
   ctx.fillStyle = outlineColor;
   for (const { x, y, width, height } of pixelRects(bars, centerX, centerY, zoom)) {
     const extra = outlineMode === 1 ? 2 : 1;
-    fillDisplayRect(ctx, x - 1, y - 1, width + extra, height + extra, Math.round(centerX), stretch);
+    fillDisplayRect(ctx, x - 1, y - 1, width + extra, height + extra, pixelCenter(centerX), stretch);
   }
 }
 
 export function paintBarFills(ctx, bars, centerX, centerY, zoom, color, stretch = 1) {
   ctx.fillStyle = color;
   for (const { x, y, width, height } of pixelRects(bars, centerX, centerY, zoom)) {
-    fillDisplayRect(ctx, x, y, width, height, Math.round(centerX), stretch);
+    fillDisplayRect(ctx, x, y, width, height, pixelCenter(centerX), stretch);
   }
 }
 

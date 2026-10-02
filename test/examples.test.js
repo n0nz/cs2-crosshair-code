@@ -8,6 +8,7 @@ test('every selectable player code decodes with the current decoder', async () =
   assert.deepEqual(Object.keys(exampleCodes), names);
   for (const name of names) {
     const crosshair = decodeCrosshair(exampleCodes[name]);
-    assert.ok(crosshair.version === 3 || crosshair.version === 4, name);
+    assert.ok(crosshair.format === 'CS' || crosshair.version === 3 || crosshair.version === 4, name);
   }
+  assert.equal(exampleCodes.donk, 'CSjfv9sk5dhGqmzWuRNMxs6yTkOxj26vkrFuXdLf9Hxcjb');
 });

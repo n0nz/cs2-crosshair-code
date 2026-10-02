@@ -20,13 +20,13 @@ test('d0cc gap starts one pixel from the center even with three-pixel thickness'
   assert.deepEqual(bars.left, { x: -3, y: -1.5, width: 2, height: 3 });
 });
 
-test('donk gap-zero crosshair paints equally on both sides of the center', async () => {
+test('donk crosshair arms mirror around the center pixel', async () => {
   const { decodeCrosshair } = await import('../public/crosshair.js');
   const { exampleCodes } = await import('../public/examples.js');
   const { previewBars, previewZoom } = await import('../public/preview-geometry.js');
   const { paintPreviewBars } = await import('../public/preview-paint.js');
   const c = decodeCrosshair(exampleCodes.donk);
-  assert.equal(c.gap, 0);
+  assert.equal(c.gap, 1);
   const center = 40;
 
   const pixels = new Set();
@@ -41,9 +41,15 @@ test('donk gap-zero crosshair paints equally on both sides of the center', async
   paintPreviewBars(ctx, Object.values(previewBars(c)), center, center, previewZoom(c.screenHeight), c.outlineMode, 'green');
   for (const pixel of pixels) {
     const [x, y] = pixel.split(',').map(Number);
-    assert.ok(pixels.has(`${2 * center - 1 - x},${y}`), `left/right mismatch at ${pixel}`);
-    assert.ok(pixels.has(`${x},${2 * center - 1 - y}`), `top/bottom mismatch at ${pixel}`);
+    assert.ok(pixels.has(`${2 * center - x},${y}`), `left/right mismatch at ${pixel}`);
+    assert.ok(pixels.has(`${x},${2 * center - y}`), `top/bottom mismatch at ${pixel}`);
   }
+
+  const stretched = [];
+  const stretchCtx = { fillStyle: '', fillRect(x, y, width, height) { stretched.push({ x, y, width, height }); } };
+  paintPreviewBars(stretchCtx, Object.values(previewBars(c)), center, center, previewZoom(c.screenHeight), 0, 'green', 4 / 3);
+  const [right, left] = stretched;
+  assert.equal((right.x + right.width / 2 + left.x + left.width / 2) / 2, center + 0.5);
 });
 
 test('stretched previews scale rasterized player crosshairs by the display ratio', async () => {
@@ -93,7 +99,7 @@ test('touching outlined bars and dot have no black seam inside the crosshair', a
   const bars = Object.values(previewBars({ length: 2, thickness: 1, gap: 0, dot: true, tStyle: false, style: 4 }));
   paintPreviewBars(ctx, bars, 15, 15, 1.5, 1, 'green');
   assert.equal(pixels.get('16,15'), 'green'); // Join between dot and right bar.
-  assert.equal(pixels.get('18,15'), '#061014'); // Only the outer edge is black.
+  assert.equal(pixels.get('19,15'), '#061014'); // Only the outer edge is black.
 });
 
 test('separated bars retain their own outline around the gap', async () => {
@@ -110,8 +116,8 @@ test('separated bars retain their own outline around the gap', async () => {
   };
   const bars = Object.values(previewBars({ length: 2, thickness: 1, gap: 4, dot: true, tStyle: false, style: 4 }));
   paintPreviewBars(ctx, bars, 15, 15, 1.5, 1, 'green');
-  assert.equal(pixels.get('20,15'), '#061014'); // Bar's inner outline.
-  assert.equal(pixels.get('18,15'), undefined); // A visible gap remains.
+  assert.equal(pixels.get('21,15'), '#061014'); // Bar's inner outline.
+  assert.equal(pixels.get('19,15'), undefined); // A visible gap remains.
 });
 
 test('preview uses the outline colour carried by a CS code', async () => {
@@ -134,16 +140,16 @@ test('the supplied CS crosshair paints one-pixel lines and a one-pixel gap at 10
   const ctx = { fillStyle: '', fillRect(x, y, width, height) { rects.push({ x, y, width, height }); } };
   paintPreviewBars(ctx, Object.values(previewBars(c)), 40, 40, previewZoom(c.screenHeight), c.outlineMode, 'green');
   assert.deepEqual(rects, [
-    { x: 41, y: 40, width: 3, height: 1 },
+    { x: 42, y: 40, width: 3, height: 1 },
     { x: 36, y: 40, width: 3, height: 1 },
-    { x: 40, y: 41, width: 1, height: 3 },
+    { x: 40, y: 42, width: 1, height: 3 },
     { x: 40, y: 36, width: 1, height: 3 },
   ]);
 
   const thicker = [];
   const thickCtx = { fillStyle: '', fillRect(x, y, width, height) { thicker.push({ x, y, width, height }); } };
   paintPreviewBars(thickCtx, Object.values(previewBars({ ...c, thickness: 2, gap: 2 })), 40, 40, previewZoom(c.screenHeight), 0, 'green');
-  assert.deepEqual(thicker[0], { x: 42, y: 39, width: 3, height: 2 });
+  assert.deepEqual(thicker[0], { x: 43, y: 40, width: 3, height: 2 });
 });
 
 test('preview uses the configured screen height without extra magnification', async () => {
