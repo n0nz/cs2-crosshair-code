@@ -13,9 +13,9 @@ export function previewZoom(screenHeight) {
 export function previewBars(c) {
   const length = Math.max(0, c.length);
   const thickness = Math.max(1, c.thickness);
-  // CS2's current gap is the distance from the center to each bar's inner edge.
-  // Adding half the bar thickness here makes thick crosshairs (e.g. d0cc) too open.
-  const start = c.gap;
+  // Bar edges fall between pixels. Move the inner edge inward by half a pixel
+  // so a gap of 1 leaves one center pixel empty after rasterization.
+  const start = c.gap - 0.5;
   const rect = (x, y, width, height) => ({ x, y, width, height });
   const bars = {};
 
