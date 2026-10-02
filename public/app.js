@@ -52,19 +52,22 @@ function renderPreview(c) {
   const zoom = previewZoom(c.screenHeight);
   const stretch = previewModes[aspect.value] ?? 1;
   const color = `rgba(${c.red}, ${c.green}, ${c.blue}, ${c.alpha / 255})`;
+  const outlineColor = c.outlineColor
+    ? `rgba(${c.outlineColor.red}, ${c.outlineColor.green}, ${c.outlineColor.blue}, ${c.outlineColor.alpha / 255})`
+    : '#061014';
 
   if (c.style === 3 || c.style === 8) {
     const dots = c.dot ? [previewBars({ ...c, style: 6 }).dot] : [];
-    paintShape(ctx, c, centerX, centerY, zoom, stretch, true, color);
-    paintBarOutlines(ctx, dots, centerX, centerY, zoom, c.outlineMode, stretch);
+    paintShape(ctx, c, centerX, centerY, zoom, stretch, true, color, outlineColor);
+    paintBarOutlines(ctx, dots, centerX, centerY, zoom, c.outlineMode, stretch, outlineColor);
     paintShape(ctx, c, centerX, centerY, zoom, stretch, false, color);
     paintBarFills(ctx, dots, centerX, centerY, zoom, color, stretch);
     return;
   }
-  paintPreviewBars(ctx, Object.values(previewBars(c)), centerX, centerY, zoom, c.outlineMode, color, stretch);
+  paintPreviewBars(ctx, Object.values(previewBars(c)), centerX, centerY, zoom, c.outlineMode, color, stretch, outlineColor);
 }
 
-function paintShape(ctx, c, centerX, centerY, zoom, stretch, outline, color) {
+function paintShape(ctx, c, centerX, centerY, zoom, stretch, outline, color, outlineColor) {
   if (outline && !c.outlineMode) return;
   ctx.save();
   ctx.translate(centerX, centerY);
@@ -73,7 +76,7 @@ function paintShape(ctx, c, centerX, centerY, zoom, stretch, outline, color) {
   ctx.beginPath();
   if (c.style === 3) ctx.arc(0, 0, radius, 0, Math.PI * 2);
   else ctx.rect(-radius, -radius, radius * 2, radius * 2);
-  ctx.strokeStyle = outline ? '#061014' : color;
+  ctx.strokeStyle = outline ? outlineColor : color;
   ctx.lineWidth = Math.max(1, c.thickness) + (outline ? 2 : 0);
   ctx.stroke();
   ctx.restore();
@@ -87,6 +90,7 @@ function renderDetails(c) {
     ['detailDot', state(c.dot)], ['detailTStyle', state(c.tStyle)],
     ['detailRecoil', state(c.recoil)], ['detailColor', `rgb(${c.red}, ${c.green}, ${c.blue})`],
     ['detailAlpha', c.alpha], ['detailScreenHeight', `${c.screenHeight} px`], ['detailSpreadLimit', c.spreadLimit],
+    ...(c.outlineColor ? [['detailOutlineColor', `rgba(${c.outlineColor.red}, ${c.outlineColor.green}, ${c.outlineColor.blue}, ${c.outlineColor.alpha})`]] : []),
   ];
   details.replaceChildren(...items.map(([label, value]) => {
     const item = document.createElement('div');
@@ -126,9 +130,9 @@ function update() {
     currentCrosshair = c;
     commands.value = consoleCommands(c);
     copy.disabled = false;
-    badge.textContent = t(language, 'codeVersion', { version: c.version });
+    badge.textContent = c.format === 'CS' ? t(language, 'codeNewVersion', { version: c.version }) : t(language, 'codeVersion', { version: c.version });
     count.textContent = t(language, 'commandCount', { count: commands.value.split(';').length });
-    message.textContent = t(language, 'decodeSuccess', { version: c.version, height: c.screenHeight });
+    message.textContent = t(language, c.format === 'CS' ? 'decodeNewSuccess' : 'decodeSuccess', { version: c.version, height: c.screenHeight });
     message.classList.remove('error');
     message.classList.add('success');
     renderPreview(c);

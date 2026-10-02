@@ -20,9 +20,9 @@ function pixelRects(bars, centerX, centerY, zoom) {
   });
 }
 
-export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch = 1) {
+export function paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch = 1, outlineColor = OUTLINE_COLOR) {
   if (!outlineMode) return;
-  ctx.fillStyle = OUTLINE_COLOR;
+  ctx.fillStyle = outlineColor;
   for (const { x, y, width, height } of pixelRects(bars, centerX, centerY, zoom)) {
     const extra = outlineMode === 1 ? 2 : 1;
     fillDisplayRect(ctx, x - 1, y - 1, width + extra, height + extra, Math.round(centerX), stretch);
@@ -38,7 +38,7 @@ export function paintBarFills(ctx, bars, centerX, centerY, zoom, color, stretch 
 
 // Complete the outline layer before any colored pixels. Touching pieces then
 // cover each other's inner outline while separated pieces retain their border.
-export function paintPreviewBars(ctx, bars, centerX, centerY, zoom, outlineMode, color, stretch = 1) {
-  paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch);
+export function paintPreviewBars(ctx, bars, centerX, centerY, zoom, outlineMode, color, stretch = 1, outlineColor = OUTLINE_COLOR) {
+  paintBarOutlines(ctx, bars, centerX, centerY, zoom, outlineMode, stretch, outlineColor);
   paintBarFills(ctx, bars, centerX, centerY, zoom, color, stretch);
 }

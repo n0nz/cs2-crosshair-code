@@ -114,6 +114,17 @@ test('separated bars retain their own outline around the gap', async () => {
   assert.equal(pixels.get('18,15'), undefined); // A visible gap remains.
 });
 
+test('preview uses the outline colour carried by a CS code', async () => {
+  const { paintPreviewBars } = await import('../public/preview-paint.js');
+  const colors = [];
+  const ctx = {
+    fillStyle: '',
+    fillRect() { colors.push(this.fillStyle); },
+  };
+  paintPreviewBars(ctx, [{ x: 2, y: 0, width: 3, height: 1 }], 10, 10, 1, 1, 'green', 1, 'rgba(255, 0, 0, 0.5)');
+  assert.deepEqual(colors, ['rgba(255, 0, 0, 0.5)', 'green']);
+});
+
 test('preview zoom is smaller than the old three-times scale', async () => {
   const { previewZoom } = await import('../public/preview-geometry.js');
   assert.equal(previewZoom(1080), 1.5);

@@ -1,5 +1,6 @@
 const ALPHABET = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789';
 const CODE_PATTERN = /^CSGO-(.{5})-(.{5})-(.{5})-(.{5})-(.{5})$/;
+const NEW_CODE_PATTERN = /^CS(.{44})$/;
 
 function decodeError(code, message, params = {}) {
   return Object.assign(new Error(message), { code, params });
@@ -7,8 +8,9 @@ function decodeError(code, message, params = {}) {
 
 export function decodeCrosshair(input) {
   const code = input.trim();
+  if (code.startsWith('CS') && !code.startsWith('CSGO-')) return decodeNewCrosshair(code);
   const match = CODE_PATTERN.exec(code);
-  if (!match) throw decodeError('errorFormat', 'รูปแบบรหัสไม่ถูกต้อง: ต้องเป็น CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx');
+  if (!match) throw decodeError('errorFormat', 'รูปแบบรหัสไม่ถูกต้อง');
 
   const digits = match.slice(1).join('');
   let value = 0n;
@@ -54,6 +56,48 @@ export function decodeCrosshair(input) {
   return result;
 }
 
+function decodeNewCrosshair(code) {
+  const match = NEW_CODE_PATTERN.exec(code);
+  if (!match) throw decodeError('errorFormat', 'รูปแบบรหัสไม่ถูกต้อง');
+  let value = 0n;
+  for (const character of [...match[1]].reverse()) {
+    const digit = ALPHABET.indexOf(character);
+    if (digit < 0) throw decodeError('errorCharacter', 'รหัสมีอักขระที่ใช้ไม่ได้');
+    value = value * 57n + BigInt(digit);
+  }
+  if (value >= (1n << 256n)) throw decodeError('errorRange', 'รหัสอยู่นอกช่วงข้อมูล crosshair');
+  const bytes = new Uint8Array(32);
+  for (let i = 31; i >= 0; i--) {
+    bytes[i] = Number(value & 255n);
+    value >>= 8n;
+  }
+  const checksum = bytes.slice(1).reduce((sum, byte) => sum + byte, 0) & 255;
+  if (bytes[0] !== checksum) throw decodeError('errorChecksum', 'Checksum ไม่ตรง');
+  if (bytes[1] !== 1) throw decodeError('errorVersion', `ยังไม่รองรับรหัสรุ่น ${bytes[1]}`, { version: bytes[1] });
+
+  // The 30 September container stores scope and dynamic settings after byte 18.
+  // Their nonzero layout has not been verified. Reject it so copy never emits
+  // plausible but incomplete console commands.
+  if (bytes[15] !== 0 || bytes.slice(19).some(Boolean)) {
+    throw decodeError('errorNewFields', 'รหัสนี้มีค่ารูปแบบใหม่ที่ยังถอดไม่ได้ครบ');
+  }
+  const style = bytes[4] & 31;
+  const outlineMode = bytes[13] >>> 6;
+  if (style > 8) throw decodeError('errorStyle', 'รหัสมีค่า style ที่ไม่รองรับ');
+  if (outlineMode > 2) throw decodeError('errorOutline', 'รหัสมีค่า outline ที่ไม่รองรับ');
+  return {
+    code, format: 'CS', version: 1, style, outlineMode,
+    recoil: Boolean(bytes[4] & 0x20), dot: Boolean(bytes[4] & 0x40),
+    tStyle: Boolean(bytes[4] & 0x80),
+    red: bytes[5], green: bytes[6], blue: bytes[7], alpha: bytes[8],
+    outlineColor: { red: bytes[9], green: bytes[10], blue: bytes[11], alpha: bytes[12] },
+    thickness: bytes[13] & 63, gap: bytes[14], length: bytes[16],
+    spreadLimit: bytes[17], splitDistance: bytes[18],
+    innerAlpha: 0, outerAlpha: 0.3, splitRatio: 0,
+    screenHeight: bytes[2] | (bytes[3] << 8),
+  };
+}
+
 export function consoleCommands(crosshair) {
   const c = crosshair;
   const rows = [
@@ -69,6 +113,12 @@ export function consoleCommands(crosshair) {
     ['cl_crosshaircolor_g', c.green],
     ['cl_crosshaircolor_b', c.blue],
     ['cl_crosshaircolor_a', c.alpha],
+    ...(c.outlineColor ? [
+      ['cl_crosshairoutline_r', c.outlineColor.red],
+      ['cl_crosshairoutline_g', c.outlineColor.green],
+      ['cl_crosshairoutline_b', c.outlineColor.blue],
+      ['cl_crosshairoutline_a', c.outlineColor.alpha],
+    ] : []),
     ['cl_crosshair_screen_height', c.screenHeight],
     ['cl_crosshair_dynamic_spread_limit', c.spreadLimit],
     ['cl_crosshair_dynamic_splitdist', c.splitDistance],
