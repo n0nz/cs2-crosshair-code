@@ -5,7 +5,7 @@ export const previewModes = Object.freeze({
 });
 
 export function previewZoom(screenHeight) {
-  return Math.min(2, Math.max(0.75, 1.5 * 1080 / Math.max(1, screenHeight)));
+  return Math.min(2, Math.max(0.5, 1080 / Math.max(1, screenHeight)));
 }
 
 // Native-resolution rectangles relative to the center. Display stretching

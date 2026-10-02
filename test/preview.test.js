@@ -125,8 +125,29 @@ test('preview uses the outline colour carried by a CS code', async () => {
   assert.deepEqual(colors, ['rgba(255, 0, 0, 0.5)', 'green']);
 });
 
-test('preview zoom is smaller than the old three-times scale', async () => {
+test('the supplied CS crosshair paints one-pixel lines and a one-pixel gap at 1080p scale', async () => {
+  const { decodeCrosshair } = await import('../public/crosshair.js');
+  const { previewBars, previewZoom } = await import('../public/preview-geometry.js');
+  const { paintPreviewBars } = await import('../public/preview-paint.js');
+  const c = decodeCrosshair('CSjfv9sk5dhGqmzWuRNMxs6yTkOxj26vkrFuXdLf9Hxcjb');
+  const rects = [];
+  const ctx = { fillStyle: '', fillRect(x, y, width, height) { rects.push({ x, y, width, height }); } };
+  paintPreviewBars(ctx, Object.values(previewBars(c)), 40, 40, previewZoom(c.screenHeight), c.outlineMode, 'green');
+  assert.deepEqual(rects, [
+    { x: 41, y: 40, width: 3, height: 1 },
+    { x: 36, y: 40, width: 3, height: 1 },
+    { x: 40, y: 41, width: 1, height: 3 },
+    { x: 40, y: 36, width: 1, height: 3 },
+  ]);
+
+  const thicker = [];
+  const thickCtx = { fillStyle: '', fillRect(x, y, width, height) { thicker.push({ x, y, width, height }); } };
+  paintPreviewBars(thickCtx, Object.values(previewBars({ ...c, thickness: 2, gap: 2 })), 40, 40, previewZoom(c.screenHeight), 0, 'green');
+  assert.deepEqual(thicker[0], { x: 42, y: 39, width: 3, height: 2 });
+});
+
+test('preview uses the configured screen height without extra magnification', async () => {
   const { previewZoom } = await import('../public/preview-geometry.js');
-  assert.equal(previewZoom(1080), 1.5);
-  assert.equal(previewZoom(960), 1.6875);
+  assert.equal(previewZoom(1080), 1);
+  assert.equal(previewZoom(960), 1.125);
 });

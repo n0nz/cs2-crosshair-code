@@ -5,17 +5,16 @@ function fillDisplayRect(ctx, x, y, width, height, centerX, stretch) {
 }
 
 function pixelRects(bars, centerX, centerY, zoom) {
-  // Round offsets symmetrically: Math.round(-4.5) and Math.round(4.5)
-  // otherwise produce arms with different lengths in stretched modes.
-  const edge = (center, offset) => Math.round(center) + Math.sign(offset) * Math.round(Math.abs(offset * zoom));
+  // Round each dimension once. Rounding both edges of a one-pixel line
+  // centered on the crosshair makes it two pixels thick.
   return bars.map((bar) => {
-    const x = edge(centerX, bar.x);
-    const y = edge(centerY, bar.y);
+    const width = Math.max(1, Math.round(bar.width * zoom));
+    const height = Math.max(1, Math.round(bar.height * zoom));
     return {
-      x,
-      y,
-      width: Math.max(1, edge(centerX, bar.x + bar.width) - x),
-      height: Math.max(1, edge(centerY, bar.y + bar.height) - y),
+      x: Math.round(Math.round(centerX) + (bar.x + bar.width / 2) * zoom - width / 2),
+      y: Math.round(Math.round(centerY) + (bar.y + bar.height / 2) * zoom - height / 2),
+      width,
+      height,
     };
   });
 }
