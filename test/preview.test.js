@@ -52,6 +52,35 @@ test('donk crosshair arms mirror around the center pixel', async () => {
   assert.equal((right.x + right.width / 2 + left.x + left.width / 2) / 2, center + 0.5);
 });
 
+test('even-width style 4 crosshair mirrors around the center boundary', async () => {
+  const { previewBars, previewZoom } = await import('../public/preview-geometry.js');
+  const { paintPreviewBars } = await import('../public/preview-paint.js');
+  for (const screenHeight of [960, 1080]) {
+    const c = { style: 4, length: 3, thickness: 2, gap: 2, dot: false, tStyle: false };
+    const pixels = new Set();
+    const ctx = {
+      fillStyle: '',
+      fillRect(x, y, width, height) {
+        for (let row = y; row < y + height; row++) {
+          for (let col = x; col < x + width; col++) pixels.add(`${col},${row}`);
+        }
+      },
+    };
+    paintPreviewBars(ctx, Object.values(previewBars(c)), 40, 40, previewZoom(screenHeight), 0, 'green');
+    for (const pixel of pixels) {
+      const [x, y] = pixel.split(',').map(Number);
+      assert.ok(pixels.has(`${79 - x},${y}`), `${screenHeight}px left/right mismatch at ${pixel}`);
+      assert.ok(pixels.has(`${x},${79 - y}`), `${screenHeight}px top/bottom mismatch at ${pixel}`);
+    }
+
+    const stretched = [];
+    const stretchCtx = { fillStyle: '', fillRect(x, y, width, height) { stretched.push({ x, y, width, height }); } };
+    paintPreviewBars(stretchCtx, Object.values(previewBars(c)), 40, 40, previewZoom(screenHeight), 0, 'green', 4 / 3);
+    const [right, left] = stretched;
+    assert.equal((right.x + right.width / 2 + left.x + left.width / 2) / 2, 40);
+  }
+});
+
 test('stretched previews scale rasterized player crosshairs by the display ratio', async () => {
   const { decodeCrosshair } = await import('../public/crosshair.js');
   const { exampleCodes } = await import('../public/examples.js');
@@ -99,7 +128,7 @@ test('touching outlined bars and dot have no black seam inside the crosshair', a
   const bars = Object.values(previewBars({ length: 2, thickness: 1, gap: 0, dot: true, tStyle: false, style: 4 }));
   paintPreviewBars(ctx, bars, 15, 15, 1.5, 1, 'green');
   assert.equal(pixels.get('16,15'), 'green'); // Join between dot and right bar.
-  assert.equal(pixels.get('18,15'), '#061014'); // Only the outer edge is black.
+  assert.equal(pixels.get('17,15'), '#061014'); // Only the outer edge is black.
 });
 
 test('separated bars retain their own outline around the gap', async () => {
@@ -116,7 +145,7 @@ test('separated bars retain their own outline around the gap', async () => {
   };
   const bars = Object.values(previewBars({ length: 2, thickness: 1, gap: 4, dot: true, tStyle: false, style: 4 }));
   paintPreviewBars(ctx, bars, 15, 15, 1.5, 1, 'green');
-  assert.equal(pixels.get('20,15'), '#061014'); // Bar's inner outline.
+  assert.equal(pixels.get('19,15'), '#061014'); // Bar's inner outline.
   assert.equal(pixels.get('18,15'), undefined); // A visible gap remains.
 });
 
@@ -149,7 +178,7 @@ test('the supplied CS crosshair paints one-pixel lines and a one-pixel gap at 10
   const thicker = [];
   const thickCtx = { fillStyle: '', fillRect(x, y, width, height) { thicker.push({ x, y, width, height }); } };
   paintPreviewBars(thickCtx, Object.values(previewBars({ ...c, thickness: 2, gap: 2 })), 40, 40, previewZoom(c.screenHeight), 0, 'green');
-  assert.deepEqual(thicker[0], { x: 42, y: 40, width: 3, height: 2 });
+  assert.deepEqual(thicker[0], { x: 42, y: 39, width: 3, height: 2 });
 });
 
 test('preview uses the configured screen height without extra magnification', async () => {
